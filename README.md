@@ -14,11 +14,13 @@ basic SOC investigation workflows.
 - Assigns alert severity
 - Maps alerts to MITRE ATT&CK T1110.001
 - Displays alerts in the terminal
+- Stores alerts in a local SQLite database
+- Prevents duplicate alert records
+- Displays alerts in an interactive Streamlit dashboard
+- Includes severity and case-status filters
+- Displays alert metrics and investigation details
 
 ## Planned Features
-
-- SQLite alert and case storage
-- Streamlit investigation dashboard
 - Analyst notes and case statuses
 - Password-spraying detection
 - Suspicious PowerShell detection
