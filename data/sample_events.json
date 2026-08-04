@@ -1,0 +1,65 @@
+[
+  {
+    "timestamp": "2026-08-04T14:00:00Z",
+    "event_type": "login_success",
+    "username": "alice",
+    "source_ip": "10.0.0.25",
+    "hostname": "WORKSTATION-01"
+  },
+  {
+    "timestamp": "2026-08-04T14:05:00Z",
+    "event_type": "failed_login",
+    "username": "rruiz",
+    "source_ip": "203.0.113.50",
+    "hostname": "VPN-GATEWAY"
+  },
+  {
+    "timestamp": "2026-08-04T14:05:30Z",
+    "event_type": "failed_login",
+    "username": "rruiz",
+    "source_ip": "203.0.113.50",
+    "hostname": "VPN-GATEWAY"
+  },
+  {
+    "timestamp": "2026-08-04T14:06:00Z",
+    "event_type": "failed_login",
+    "username": "rruiz",
+    "source_ip": "203.0.113.50",
+    "hostname": "VPN-GATEWAY"
+  },
+  {
+    "timestamp": "2026-08-04T14:06:30Z",
+    "event_type": "failed_login",
+    "username": "rruiz",
+    "source_ip": "203.0.113.50",
+    "hostname": "VPN-GATEWAY"
+  },
+  {
+    "timestamp": "2026-08-04T14:07:00Z",
+    "event_type": "failed_login",
+    "username": "rruiz",
+    "source_ip": "203.0.113.50",
+    "hostname": "VPN-GATEWAY"
+  },
+  {
+    "timestamp": "2026-08-04T14:07:20Z",
+    "event_type": "failed_login",
+    "username": "rruiz",
+    "source_ip": "203.0.113.50",
+    "hostname": "VPN-GATEWAY"
+  },
+  {
+    "timestamp": "2026-08-04T14:08:00Z",
+    "event_type": "login_success",
+    "username": "rruiz",
+    "source_ip": "203.0.113.50",
+    "hostname": "VPN-GATEWAY"
+  },
+  {
+    "timestamp": "2026-08-04T14:15:00Z",
+    "event_type": "failed_login",
+    "username": "bob",
+    "source_ip": "198.51.100.10",
+    "hostname": "WORKSTATION-02"
+  }
+]
