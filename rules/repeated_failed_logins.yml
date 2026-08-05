@@ -1,0 +1,18 @@
+id: AUTH-001
+name: Repeated Failed Logins
+description: Detects repeated failed authentication attempts against one account.
+enabled: true
+severity: high
+
+event_type: failed_login
+threshold: 5
+window_minutes: 5
+
+group_by:
+  - username
+  - source_ip
+
+mitre:
+  tactic: Credential Access
+  technique_id: T1110.001
+  technique_name: Password Guessing

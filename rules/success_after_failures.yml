@@ -1,0 +1,19 @@
+id: AUTH-002
+name: Successful Login After Repeated Failures
+description: Detects a successful authentication after several failed attempts.
+enabled: true
+severity: critical
+
+failed_event_type: failed_login
+success_event_type: login_success
+threshold: 5
+window_minutes: 10
+
+group_by:
+  - username
+  - source_ip
+
+mitre:
+  tactic: Initial Access
+  technique_id: T1078
+  technique_name: Valid Accounts
