@@ -94,9 +94,9 @@ filtered_df = alerts_df[
 
 total_alerts = len(filtered_df)
 
-high_alerts = int(
+high_risk_alerts = int(
     filtered_df["severity"]
-    .eq("high")
+    .isin(["high", "critical"])
     .sum()
 )
 
@@ -124,8 +124,8 @@ metric_1.metric(
 )
 
 metric_2.metric(
-    label="High Severity",
-    value=high_alerts,
+    label="High / Critical",
+    value=high_risk_alerts,
 )
 
 metric_3.metric(

@@ -23,11 +23,14 @@ basic SOC investigation workflows.
 - Saves analyst investigation notes in SQLite
 - Supports new, investigating, resolved, and false-positive cases
 - Refreshes dashboard metrics after case updates
+- Detects successful logins following repeated failures
+- Runs multiple detection rules against the same event dataset
+- Assigns critical severity to possible account compromise
+- Maps authentication behavior to MITRE ATT&CK
 
 ## Planned Features
 - Password-spraying detection
 - Suspicious PowerShell detection
-- Successful login after repeated failures
 - Alert filtering and reporting
 
 ## Running the Project

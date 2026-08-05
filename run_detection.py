@@ -7,7 +7,7 @@ from app.database import (
     save_alerts,
 )
 from app.detector import (
-    detect_failed_login_bursts,
+    detect_all_alerts,
     load_events,
 )
 
@@ -33,7 +33,7 @@ def main() -> None:
 
     try:
         events = load_events(data_path)
-        alerts = detect_failed_login_bursts(events)
+        alerts = detect_all_alerts(events)
 
         initialize_database()
         inserted_count = save_alerts(alerts)

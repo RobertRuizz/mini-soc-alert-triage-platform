@@ -8,6 +8,9 @@ from typing import Any
 WINDOW = timedelta(minutes=5)
 THRESHOLD = 5
 
+SUCCESS_WINDOW = timedelta(minutes=10)
+SUCCESS_THRESHOLD = 5
+
 
 def parse_timestamp(value: str) -> datetime:
     """Convert an ISO-8601 timestamp ending in Z into a datetime."""
@@ -94,5 +97,87 @@ def detect_failed_login_bursts(
 
             alerts.append(alert)
             alerted_keys.add(key)
+
+    return alerts
+def detect_success_after_failed_logins(
+    events: list[dict[str, Any]],
+    threshold: int = SUCCESS_THRESHOLD,
+    window: timedelta = SUCCESS_WINDOW,
+) -> list[dict[str, Any]]:
+    """
+    Detect a successful login following repeated failed
+    logins for the same username and source IP.
+    """
+    failed_login_windows: dict[
+        tuple[str, str],
+        deque[dict[str, Any]],
+    ] = defaultdict(deque)
+
+    alerts: list[dict[str, Any]] = []
+
+    for event in events:
+        key = (
+            event["username"],
+            event["source_ip"],
+        )
+
+        current_time = event["_parsed_timestamp"]
+        cutoff = current_time - window
+        current_window = failed_login_windows[key]
+
+        while (
+            current_window
+            and current_window[0]["_parsed_timestamp"] < cutoff
+        ):
+            current_window.popleft()
+
+        if event["event_type"] == "failed_login":
+            current_window.append(event)
+            continue
+
+        if event["event_type"] != "login_success":
+            continue
+
+        if len(current_window) < threshold:
+            continue
+
+        alert = {
+            "rule_name": (
+                "Successful Login After Repeated Failures"
+            ),
+            "severity": "critical",
+            "username": event["username"],
+            "source_ip": event["source_ip"],
+            "hostname": event["hostname"],
+            "failed_attempts": len(current_window),
+            "first_seen": current_window[0]["timestamp"],
+            "last_seen": event["timestamp"],
+            "mitre_technique": (
+                "T1110.001 / T1078 - Password Guessing "
+                "and Valid Accounts"
+            ),
+            "status": "new",
+        }
+
+        alerts.append(alert)
+
+        # Clear the failures so the same sequence does not
+        # generate another alert from a second successful login.
+        current_window.clear()
+
+    return alerts
+def detect_all_alerts(
+    events: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Run all available detection rules."""
+    alerts: list[dict[str, Any]] = []
+
+    alerts.extend(
+        detect_failed_login_bursts(events)
+    )
+
+    alerts.extend(
+        detect_success_after_failed_logins(events)
+    )
 
     return alerts
