@@ -4,6 +4,27 @@ A Python-based security monitoring project that analyzes synthetic logs,
 detects suspicious activity, maps alerts to MITRE ATT&CK, and supports
 basic SOC investigation workflows.
 
+## Automated Testing
+
+The project includes automated pytest coverage for:
+
+- Repeated failed-login detection
+- Successful authentication after repeated failures
+- Password-spraying detection
+- YAML threshold behavior
+- Enabled and disabled detection rules
+- SQLite alert storage
+- Duplicate-alert prevention
+- Case-status and analyst-note updates
+- Invalid status validation
+
+Run the complete test suite:
+
+```bash
+python3 -m pytest -v
+
+
+
 ## Current Features
 
 - Loads synthetic authentication events from JSON
