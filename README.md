@@ -31,7 +31,11 @@ basic SOC investigation workflows.
 - Identifies one source IP targeting multiple accounts
 - Tracks all accounts affected by a spraying event
 - Maps password spraying to MITRE ATT&CK T1110.003
-
+- Loads detection settings from YAML rule files
+- Supports configurable thresholds and time windows
+- Allows detection rules to be enabled or disabled
+- Loads rule names, severities, and MITRE mappings dynamically
+- Separates detection content from Python implementation logic
 ## Planned Features
 - Suspicious PowerShell detection
 - Alert filtering and reporting
@@ -42,3 +46,49 @@ Activate the virtual environment:
 
 ```bash
 source .venv/bin/activate
+
+
+## Project Structure
+
+```text
+Mini-soc-platform/
+├── app/
+│   ├── __init__.py
+│   ├── database.py
+│   ├── detector.py
+│   └── rule_loader.py
+├── data/
+│   ├── sample_events.json
+│   └── soc_alerts.db
+├── rules/
+│   ├── password_spraying.yml
+│   ├── repeated_failed_logins.yml
+│   └── success_after_failures.yml
+├── tests/
+├── .gitignore
+├── dashboard.py
+├── README.md
+├── requirements.txt
+└── run_detection.py
+```
+
+### Main Components
+
+* `app/detector.py` contains the Python detection logic.
+* `app/database.py` manages alert storage and case updates in SQLite.
+* `app/rule_loader.py` loads configurable detection rules from YAML.
+* `rules/` contains the detection thresholds, severity levels, event types, and MITRE ATT&CK mappings.
+* `data/sample_events.json` contains fictional authentication logs used for testing.
+* `dashboard.py` provides the Streamlit SOC dashboard.
+* `run_detection.py` runs all enabled detection rules and stores generated alerts.
+* `tests/` will contain automated tests in the next phase.
+
+## Detection Rules
+
+Detection rules are stored in the `rules/` directory:
+
+* `repeated_failed_logins.yml`
+* `success_after_failures.yml`
+* `password_spraying.yml`
+
+Each YAML rule defines its severity, threshold, time window, event types, enabled status, and MITRE ATT&CK mapping.
