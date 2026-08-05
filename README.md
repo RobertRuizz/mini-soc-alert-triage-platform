@@ -27,9 +27,12 @@ basic SOC investigation workflows.
 - Runs multiple detection rules against the same event dataset
 - Assigns critical severity to possible account compromise
 - Maps authentication behavior to MITRE ATT&CK
+- Detects possible password-spraying activity
+- Identifies one source IP targeting multiple accounts
+- Tracks all accounts affected by a spraying event
+- Maps password spraying to MITRE ATT&CK T1110.003
 
 ## Planned Features
-- Password-spraying detection
 - Suspicious PowerShell detection
 - Alert filtering and reporting
 

@@ -11,6 +11,8 @@ THRESHOLD = 5
 SUCCESS_WINDOW = timedelta(minutes=10)
 SUCCESS_THRESHOLD = 5
 
+PASSWORD_SPRAY_WINDOW = timedelta(minutes=10)
+PASSWORD_SPRAY_ACCOUNT_THRESHOLD = 5
 
 def parse_timestamp(value: str) -> datetime:
     """Convert an ISO-8601 timestamp ending in Z into a datetime."""
@@ -166,6 +168,74 @@ def detect_success_after_failed_logins(
         current_window.clear()
 
     return alerts
+def detect_password_spraying(
+    events: list[dict[str, Any]],
+    account_threshold: int = PASSWORD_SPRAY_ACCOUNT_THRESHOLD,
+    window: timedelta = PASSWORD_SPRAY_WINDOW,
+) -> list[dict[str, Any]]:
+    """
+    Detect one source IP failing authentication against
+    multiple usernames within a limited time window.
+    """
+    source_windows: dict[
+        str,
+        deque[dict[str, Any]],
+    ] = defaultdict(deque)
+
+    alerted_sources: set[str] = set()
+    alerts: list[dict[str, Any]] = []
+
+    for event in events:
+        if event["event_type"] != "failed_login":
+            continue
+
+        source_ip = event["source_ip"]
+        current_time = event["_parsed_timestamp"]
+        cutoff = current_time - window
+        current_window = source_windows[source_ip]
+
+        current_window.append(event)
+
+        while (
+            current_window
+            and current_window[0]["_parsed_timestamp"] < cutoff
+        ):
+            current_window.popleft()
+
+        affected_accounts = sorted(
+            {
+                failed_event["username"]
+                for failed_event in current_window
+            }
+        )
+
+        if (
+            len(affected_accounts) >= account_threshold
+            and source_ip not in alerted_sources
+        ):
+            alert = {
+                "rule_name": "Possible Password Spraying",
+                "severity": "high",
+                "username": "multiple_accounts",
+                "affected_accounts": ", ".join(
+                    affected_accounts
+                ),
+                "source_ip": source_ip,
+                "hostname": event["hostname"],
+                "failed_attempts": len(current_window),
+                "first_seen": current_window[0]["timestamp"],
+                "last_seen": current_window[-1]["timestamp"],
+                "mitre_technique": (
+                    "T1110.003 - Password Spraying"
+                ),
+                "status": "new",
+            }
+
+            alerts.append(alert)
+            alerted_sources.add(source_ip)
+
+    return alerts
+
 def detect_all_alerts(
     events: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
@@ -179,5 +249,7 @@ def detect_all_alerts(
     alerts.extend(
         detect_success_after_failed_logins(events)
     )
-
+    alerts.extend(
+        detect_password_spraying(events)
+    )
     return alerts

@@ -61,5 +61,40 @@
     "username": "bob",
     "source_ip": "198.51.100.10",
     "hostname": "WORKSTATION-02"
+  },
+  {
+    "timestamp": "2026-08-04T15:00:00Z",
+    "event_type": "failed_login",
+    "username": "jordan",
+    "source_ip": "192.0.2.77",
+    "hostname": "VPN-GATEWAY"
+  },
+  {
+    "timestamp": "2026-08-04T15:01:00Z",
+    "event_type": "failed_login",
+    "username": "maria",
+    "source_ip": "192.0.2.77",
+    "hostname": "VPN-GATEWAY"
+  },
+  {
+    "timestamp": "2026-08-04T15:02:00Z",
+    "event_type": "failed_login",
+    "username": "devon",
+    "source_ip": "192.0.2.77",
+    "hostname": "VPN-GATEWAY"
+  },
+  {
+    "timestamp": "2026-08-04T15:03:00Z",
+    "event_type": "failed_login",
+    "username": "sam",
+    "source_ip": "192.0.2.77",
+    "hostname": "VPN-GATEWAY"
+  },
+  {
+    "timestamp": "2026-08-04T15:04:00Z",
+    "event_type": "failed_login",
+    "username": "taylor",
+    "source_ip": "192.0.2.77",
+    "hostname": "VPN-GATEWAY"
   }
 ]

@@ -26,7 +26,7 @@ def get_connection(
 def initialize_database(
     db_path: str | Path = DEFAULT_DB_PATH,
 ) -> None:
-    """Create the alerts table if it does not already exist."""
+    """Create or update the alerts table."""
     with get_connection(db_path) as connection:
         connection.execute(
             """
@@ -35,6 +35,7 @@ def initialize_database(
                 rule_name TEXT NOT NULL,
                 severity TEXT NOT NULL,
                 username TEXT NOT NULL,
+                affected_accounts TEXT NOT NULL DEFAULT '',
                 source_ip TEXT NOT NULL,
                 hostname TEXT NOT NULL,
                 failed_attempts INTEGER NOT NULL,
@@ -55,6 +56,49 @@ def initialize_database(
             )
             """
         )
+
+        existing_columns = {
+            row[1]
+            for row in connection.execute(
+                "PRAGMA table_info(alerts)"
+            ).fetchall()
+        }
+
+        if "affected_accounts" not in existing_columns:
+            connection.execute(
+                """
+                ALTER TABLE alerts
+                ADD COLUMN affected_accounts TEXT NOT NULL DEFAULT ''
+                """
+            )
+        
+            """
+            CREATE TABLE IF NOT EXISTS alerts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                rule_name TEXT NOT NULL,
+                severity TEXT NOT NULL,
+                username TEXT NOT NULL,
+                affected_accounts TEXT NOT NULL DEFAULT '',
+                source_ip TEXT NOT NULL,
+                hostname TEXT NOT NULL,
+                failed_attempts INTEGER NOT NULL,
+                first_seen TEXT NOT NULL,
+                last_seen TEXT NOT NULL,
+                mitre_technique TEXT NOT NULL,
+                status TEXT NOT NULL DEFAULT 'new',
+                analyst_notes TEXT NOT NULL DEFAULT '',
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+                UNIQUE (
+                    rule_name,
+                    username,
+                    source_ip,
+                    first_seen,
+                    last_seen
+                )
+            )
+            """
+        
 
 
 def save_alerts(
@@ -77,6 +121,7 @@ def save_alerts(
                     rule_name,
                     severity,
                     username,
+                    affected_accounts,
                     source_ip,
                     hostname,
                     failed_attempts,
@@ -85,12 +130,13 @@ def save_alerts(
                     mitre_technique,
                     status
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     alert["rule_name"],
                     alert["severity"],
                     alert["username"],
+                    alert.get("affected_accounts", ""),
                     alert["source_ip"],
                     alert["hostname"],
                     alert["failed_attempts"],
@@ -119,6 +165,7 @@ def fetch_all_alerts(
                 rule_name,
                 severity,
                 username,
+                affected_accounts,
                 source_ip,
                 hostname,
                 failed_attempts,

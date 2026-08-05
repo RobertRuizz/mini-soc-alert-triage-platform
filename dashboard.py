@@ -18,6 +18,31 @@ STATUS_LABELS = {
     "false_positive": "False Positive",
 }
 
+def count_affected_users(
+    alerts_frame: pd.DataFrame,
+) -> int:
+    """Count unique accounts represented by the alerts."""
+    users: set[str] = set()
+
+    for _, alert in alerts_frame.iterrows():
+        affected_accounts = str(
+            alert.get("affected_accounts", "")
+        ).strip()
+
+        if affected_accounts:
+            users.update(
+                account.strip()
+                for account in affected_accounts.split(",")
+                if account.strip()
+            )
+            continue
+
+        username = str(alert.get("username", "")).strip()
+
+        if username and username != "multiple_accounts":
+            users.add(username)
+
+    return len(users)
 
 st.set_page_config(
     page_title="Mini SOC Dashboard",
@@ -112,7 +137,7 @@ investigating_alerts = int(
     .sum()
 )
 
-affected_users = filtered_df["username"].nunique()
+affected_users = count_affected_users(filtered_df)
 
 metric_1, metric_2, metric_3, metric_4, metric_5 = (
     st.columns(5)
@@ -157,6 +182,7 @@ display_columns = [
     "status",
     "rule_name",
     "username",
+    "affected_accounts",
     "source_ip",
     "hostname",
     "failed_attempts",
@@ -188,6 +214,7 @@ display_df = display_df.rename(
         "status": "Status",
         "rule_name": "Detection Rule",
         "username": "Username",
+        "affected_accounts": "Affected Accounts",
         "source_ip": "Source IP",
         "hostname": "Hostname",
         "failed_attempts": "Attempts",
@@ -242,6 +269,16 @@ with detail_1:
         "**Username:**",
         selected_alert["username"],
     )
+    affected_accounts = (
+        selected_alert.get("affected_accounts", "")
+        or ""
+    )
+
+    if affected_accounts:
+        st.write(
+            "**Affected accounts:**",
+            affected_accounts,
+        )
     st.write(
         "**Source IP:**",
         selected_alert["source_ip"],
