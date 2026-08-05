@@ -19,9 +19,12 @@ basic SOC investigation workflows.
 - Displays alerts in an interactive Streamlit dashboard
 - Includes severity and case-status filters
 - Displays alert metrics and investigation details
+- Allows analysts to update case statuses
+- Saves analyst investigation notes in SQLite
+- Supports new, investigating, resolved, and false-positive cases
+- Refreshes dashboard metrics after case updates
 
 ## Planned Features
-- Analyst notes and case statuses
 - Password-spraying detection
 - Suspicious PowerShell detection
 - Successful login after repeated failures

@@ -134,3 +134,51 @@ def fetch_all_alerts(
         ).fetchall()
 
     return [dict(row) for row in rows]
+VALID_ALERT_STATUSES = {
+    "new",
+    "investigating",
+    "resolved",
+    "false_positive",
+}
+
+
+def update_alert(
+    alert_id: int,
+    status: str,
+    analyst_notes: str,
+    db_path: str | Path = DEFAULT_DB_PATH,
+) -> bool:
+    """
+    Update the status and analyst notes for one alert.
+
+    Returns True when an alert was updated.
+    """
+    normalized_status = status.strip().lower()
+    normalized_notes = analyst_notes.strip()
+
+    if normalized_status not in VALID_ALERT_STATUSES:
+        allowed_statuses = ", ".join(
+            sorted(VALID_ALERT_STATUSES)
+        )
+        raise ValueError(
+            f"Invalid alert status. Allowed values: "
+            f"{allowed_statuses}"
+        )
+
+    with get_connection(db_path) as connection:
+        cursor = connection.execute(
+            """
+            UPDATE alerts
+            SET
+                status = ?,
+                analyst_notes = ?
+            WHERE id = ?
+            """,
+            (
+                normalized_status,
+                normalized_notes,
+                alert_id,
+            ),
+        )
+
+    return cursor.rowcount == 1
