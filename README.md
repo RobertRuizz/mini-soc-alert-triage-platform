@@ -57,6 +57,26 @@ python3 -m pytest -v
 - Allows detection rules to be enabled or disabled
 - Loads rule names, severities, and MITRE mappings dynamically
 - Separates detection content from Python implementation logic
+
+## Automated Testing
+
+The project includes automated pytest coverage for:
+
+- Repeated failed-login detection
+- Successful authentication after repeated failures
+- Password-spraying detection
+- YAML threshold behavior
+- Enabled and disabled detection rules
+- SQLite alert storage
+- Duplicate-alert prevention
+- Case-status and analyst-note updates
+- Invalid status validation
+
+Run the complete test suite:
+
+```bash
+python3 -m pytest -v
+
 ## Planned Features
 - Suspicious PowerShell detection
 - Alert filtering and reporting
@@ -85,7 +105,17 @@ Mini-soc-platform/
 │   ├── password_spraying.yml
 │   ├── repeated_failed_logins.yml
 │   └── success_after_failures.yml
+└── docs/
+    └── screenshots
 ├── tests/
+    ├── conftest.py
+    ├── test_database.py
+    ├── test_detector.py
+    └── test_rule_loader.py
+    ├── conftest.py
+    ├── test_database.py
+    ├── test_detector.py
+    └── test_rule_loader.py
 ├── .gitignore
 ├── dashboard.py
 ├── README.md
